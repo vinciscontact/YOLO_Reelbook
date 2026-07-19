@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YOLO Run Club — The Reel Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12183B; --sea:#0E7C7B; --coral:#FF6B4A; --marigold:#FFC93C;
+  --sand:#FFF8ED; --sand-2:#F3E7D3; --chalk:#fff; --muted:#5B6480;
+  --doodle:255px 15px 225px 15px/15px 225px 15px 255px;
+  --doodle-2:15px 225px 15px 255px/255px 15px 225px 15px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--sand);color:var(--ink);font-family:"Space Grotesk",system-ui,sans-serif;font-size:16px;line-height:1.6;
+  background-image:radial-gradient(var(--sand-2) 1px,transparent 1px);background-size:22px 22px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+header.hero{padding:56px 0 22px;position:relative;overflow:hidden}
+.eyebrow{font-family:"Caveat",cursive;font-size:26px;color:var(--sea);display:inline-block;transform:rotate(-2deg);margin:0 0 6px}
+h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(38px,7vw,74px);line-height:.95;letter-spacing:-.03em;margin:0 0 14px}
+h1 em{font-style:normal;color:var(--coral)}
+.sub{max-width:640px;font-size:18px;color:var(--muted);margin:0 0 22px}
+.stamp{display:inline-block;font-family:"Caveat",cursive;font-size:20px;border:2px dashed var(--sea);border-radius:var(--doodle);padding:6px 18px;transform:rotate(-1.5deg);background:var(--chalk)}
+.hero-doodle{position:absolute;right:0;top:36px;width:250px;pointer-events:none}
+@media(max-width:860px){.hero-doodle{display:none}}
+nav.tabs{display:flex;gap:8px;flex-wrap:wrap;position:sticky;top:0;z-index:20;padding:14px 0;background:linear-gradient(var(--sand) 78%,rgba(255,248,237,0))}
+.tab{font-weight:700;font-size:14px;font-family:inherit;border:2.5px solid var(--ink);background:var(--chalk);color:var(--ink);padding:10px 16px;border-radius:var(--doodle);cursor:pointer;transition:transform .12s,background .12s}
+.tab:nth-child(even){border-radius:var(--doodle-2)}
+.tab:hover{transform:translateY(-2px) rotate(-1deg)}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--marigold)}
+.tab:focus-visible{outline:3px solid var(--coral);outline-offset:3px}
+.panel{display:none;animation:pop .25s ease}.panel.on{display:block}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(26px,4vw,38px);letter-spacing:-.02em;margin:38px 0 6px}
+h3{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:20px;margin:0 0 6px}
+.note{font-family:"Caveat",cursive;font-size:22px;color:var(--sea);margin:0 0 20px}
+.card{background:var(--chalk);border:2.5px solid var(--ink);border-radius:var(--doodle);padding:22px 24px;margin:0 0 18px;box-shadow:5px 6px 0 rgba(18,24,59,.10)}
+.card:nth-of-type(even){border-radius:var(--doodle-2)}
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(310px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.stat{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:42px;line-height:1;color:var(--coral);letter-spacing:-.03em}
+.stat-l{font-size:14px;color:var(--muted);display:block;margin-top:6px}
+.tag{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:var(--marigold);color:var(--ink);padding:3px 10px;border-radius:20px;margin:0 6px 6px 0}
+.tag.sea{background:var(--sea);color:#fff}.tag.coral{background:var(--coral);color:#fff}
+ul{padding-left:20px;margin:8px 0}li{margin:5px 0}
+.src{font-size:13px;color:var(--muted);border-top:1.5px dashed var(--sand-2);padding-top:10px;margin-top:14px}
+.reel{background:var(--chalk);border:2.5px solid var(--ink);border-radius:var(--doodle);padding:20px;box-shadow:5px 6px 0 rgba(18,24,59,.10)}
+.reel:nth-child(even){border-radius:var(--doodle-2)}
+.reel svg{display:block;margin:0 auto 10px}
+.hook{font-family:"Caveat",cursive;font-size:24px;color:var(--coral);line-height:1.25;margin:6px 0 10px;border-left:4px solid var(--marigold);padding-left:12px}
+.shots{font-size:14.5px;margin:0}
+.shots b{color:var(--sea);font-variant-numeric:tabular-nums}
+.why{display:block;margin-top:10px;font-size:13.5px;color:var(--muted);border-top:1.5px dashed var(--sand-2);padding-top:8px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1.5px dashed var(--sand-2);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+td:first-child{font-weight:700;white-space:nowrap}
+.script{font-family:"Space Grotesk",monospace;font-size:14.5px;background:var(--sand);border:2px dashed var(--sea);border-radius:var(--doodle-2);padding:16px 18px;white-space:pre-wrap;line-height:1.55}
+footer{text-align:center;font-family:"Caveat",cursive;font-size:22px;color:var(--muted);padding:40px 0 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <svg class="hero-doodle" viewBox="0 0 260 220" fill="none" stroke="#12183B" stroke-width="3" stroke-linecap="round">
+    <rect x="70" y="20" width="110" height="180" rx="16"/>
+    <path d="M108 20h44"/>
+    <path d="M104 92l48 26-48 26z" stroke="#FF6B4A" stroke-width="4"/>
+    <path d="M196 60c14 0 22 10 22 22M196 42c26 0 40 18 40 40" stroke="#0E7C7B"/>
+    <path d="M54 60c-14 0-22 10-22 22M54 42c-26 0-40 18-40 40" stroke="#0E7C7B"/>
+    <path d="M126 176l4 8 4-8" stroke="#FFC93C"/>
+    <circle cx="30" cy="160" r="10" stroke="#FFC93C"/><path d="M30 170v18M22 178h16" stroke="#FFC93C"/>
+  </svg>
+  <span class="eyebrow">Instagram, but for filling a 6 AM start line ✦</span>
+  <h1>The Reel<br><em>Engine</em></h1>
+  <p class="sub">Twelve repeatable reel formats, a 30-day posting calendar, and the exact scripts — built around one 2026 reality: on Instagram today, the reel that gets <b>sent to a friend</b> beats the reel that gets liked. And "sent to a friend" is the same action as "come with me on Saturday."</p>
+  <span class="stamp">Phone only · no editor · no budget</span>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab" role="tab" aria-selected="true" data-p="r1">01 · How Reach Works Now</button>
+  <button class="tab" role="tab" aria-selected="false" data-p="r2">02 · 12 Reel Formats</button>
+  <button class="tab" role="tab" aria-selected="false" data-p="r3">03 · 30-Day Calendar</button>
+  <button class="tab" role="tab" aria-selected="false" data-p="r4">04 · Shoot & Edit Kit</button>
+  <button class="tab" role="tab" aria-selected="false" data-p="r5">05 · Captions & DM Machine</button>
+</nav>
+
+<!-- =============== 1 =============== -->
+<section class="panel on" id="r1" role="tabpanel">
+  <h2>The three rules that decide everything</h2>
+  <p class="note">Everything below follows from these. If a reel idea doesn't serve one of them, don't shoot it.</p>
+
+  <div class="grid g3">
+    <div class="card"><div class="stat">3–5×</div><span class="stat-l">DM sends are worth roughly three to five times a like for reaching people who don't follow you. Mosseri has called sends one of the biggest ranking signals Instagram uses.</span></div>
+    <div class="card"><div class="stat">3 sec</div><span class="stat-l">The first three seconds decide whether the reel is tested further at all. After that the model switches to asking about rewatches and completion.</span></div>
+    <div class="card"><div class="stat">14s</div><span class="stat-l">A 14-second reel watched twice often beats a 60-second reel watched once. Short and loopable is a strategy, not a shortcut.</span></div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>Rule 1 — Build for the send, not the like</h3>
+      <p>Instagram in 2026 weights shares and sends above almost everything else, because sending something to a friend is the hardest signal to fake. This is a gift for a run club, because your growth mechanism is <em>literally the same action</em>: someone tags a friend saying "let's go Saturday."</p>
+      <p><b>The test for every reel:</b> would one specific person send this to one specific friend with the message "come da"? If no, it's a diary entry, not a reel.</p>
+    </div>
+    <div class="card">
+      <h3>Rule 2 — Original beats trending</h3>
+      <p>Instagram's originality scoring now demotes reposts, watermarked clips and near-duplicates, and accounts posting mostly recycled content get classified as aggregators and lose reach across Explore, Reels and Feed. Never export from another app with a visible logo.</p>
+      <p><b>Your advantage:</b> nobody else on Earth has footage of thirty people playing chain-tag on Marina sand at 6:20 a.m. Original is the one thing you have infinite supply of and cannot buy.</p>
+    </div>
+    <div class="card">
+      <h3>Rule 3 — Be legible to the topic model</h3>
+      <p>Since users started explicitly picking their interests, reels that clearly match a viewer's chosen topics saw large reach jumps. That means the <em>subject</em> of your reel has to be obvious to a machine in the first second. Keyword-rich captions now do more work than hashtag walls.</p>
+      <p><b>So:</b> say "Chennai," say "run club," say "Marina Beach" out loud, on screen, and in the caption. Every time. You are not trying to reach the world. You are trying to reach people who can physically get to a beach at 6 a.m.</p>
+    </div>
+    <div class="card">
+      <h3>The metric that actually matters to you</h3>
+      <p>Ignore views. A reel with 100,000 views from Delhi is worth less than one with 800 views in Adyar. Track two numbers in Insights:</p>
+      <ul>
+        <li><b>Sends per reach</b> — your share instinct is working</li>
+        <li><b>Profile visits per reach</b> — people are looking for the join button</li>
+      </ul>
+      <p>And the real-world one: <b>how many people at Saturday's circle raise their hand when you ask "who found us on Instagram?"</b></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Your content is a funnel, not a feed</h3>
+    <table>
+      <tr><th>Bucket</th><th>Share of posts</th><th>Job</th><th>Looks like</th></tr>
+      <tr><td>Envy</td><td>40%</td><td>Make a stranger want to be there</td><td>Sunrise, sand, laughing, the finish pile-up</td></tr>
+      <tr><td>Entry</td><td>30%</td><td>Kill the fear of showing up alone</td><td>"What actually happens", first-timer POV, pace honesty</td></tr>
+      <tr><td>Identity</td><td>20%</td><td>Turn members into recruiters</td><td>Nicknames, member spotlights, inside jokes</td></tr>
+      <tr><td>Ask</td><td>10%</td><td>Convert</td><td>This Saturday's game, time, meeting point</td></tr>
+    </table>
+    <p style="margin-top:12px">Most young clubs post 90% Ask and wonder why nothing grows. The Ask only works when Envy has done its job first.</p>
+    <div class="src">Sources: Instagram/Meta ranking updates via Sprout Social, Hootsuite, Later and SocialPilot 2026 algorithm analyses; Adam Mosseri's public statements on sends and watch time.</div>
+  </div>
+</section>
+
+<!-- =============== 2 =============== -->
+<section class="panel" id="r2" role="tabpanel">
+  <h2>Twelve formats you can shoot forever</h2>
+  <p class="note">These are formats, not one-off ideas — each one you can re-run every month with a new game and it stays fresh.</p>
+  <p><span class="tag">Envy</span><span class="tag sea">Entry</span><span class="tag coral">Identity / Ask</span></p>
+
+  <div class="grid g2" style="margin-top:14px">
+
+    <div class="reel">
+      <svg width="110" height="80" viewBox="0 0 110 80" fill="none" stroke="#12183B" stroke-width="3" stroke-linecap="round">
+        <circle cx="55" cy="34" r="18" stroke="#FFC93C" stroke-width="4"/>
+        <path d="M8 60c18-10 30 8 48 0s30 8 46 0" stroke="#0E7C7B"/>
+        <path d="M8 72c18-10 30 8 48 0s30 8 46 0" stroke="#0E7C7B"/>
+        <circle cx="30" cy="22" r="6"/><path d="M30 28v10M30 32l-8 4M30 32l9 5M30 38l-6 12M30 38l8 12"/>
+      </svg>
+      <span class="tag">Envy</span>
+      <h3>1. The 6 AM Cold Open</h3>
+      <p class="hook">"This is what Chennai looks like at 6 AM. You're asleep."</p>
+      <p class="shots"><b>0–2s</b> hard cut to the sun coming off the water, no intro, no logo. <b>2–8s</b> three fast cuts: feet on sand, the group jogging away from camera, someone laughing mid-stride. <b>8–14s</b> one wide shot of the whole club. Text card: <em>Every Saturday. 6 AM. Marina.</em> Loop back to the sunrise so it plays twice seamlessly.</p>
+      <span class="why">Why it works: pure envy, no talking, under 15 seconds, and it loops — which doubles watch time without extra footage.</span>
+    </div>
+
+    <div class="reel">
+      <svg width="110" height="80" viewBox="0 0 110 80" fill="none" stroke="#12183B" stroke-width="3" stroke-linecap="round">
+        <rect x="20" y="12" width="70" height="56" rx="6"/>
+        <path d="M20 30h70"/><path d="M32 44h46M32 56h30" stroke="#0E7C7B"/>
+        <circle cx="30" cy="21" r="3" fill="#FF6B4A" stroke="none"/><circle cx="42" cy="21" r="3" fill="#FFC93C" stroke="none"/>
+      </svg>
+      <span class="tag sea">Entry</span>
+      <h3>2. "Nobody Tells You This" </h3>
+      <p class="hook">"Scared to join a run club alone? Here's what actually happens."</p>
+      <p class="shots"><b>0–2s</b> face to camera, spoken + big on-screen text. <b>2–10s</b> the honest bit: "you show up, nobody knows you, we say your name in a circle, you're in." <b>10–22s</b> B-roll of the circle and chai. <b>22–28s</b> "Slowest pace welcome. Nobody gets left behind." <b>End</b> — comment CTA.</p>
+      <span class="why">Why it works: the number one barrier is social fear, not fitness. This reel dissolves it and gets sent to exactly the anxious friend who needs it.</span>
+    </div>
+
+    <div class="reel">
+      <svg width="110" height="80" viewBox="0 0 110 80" fill="none" stroke="#12183B" stroke-width="3" stroke-linecap="round">
+        <path d="M14 62h82" stroke="#0E7C7B"/>
+        <circle cx="34" cy="20" r="7"/><path d="M34 27v14M34 32l-11 5M34 32l12 6M34 41l-8 21M34 41l11 21"/>
+        <circle cx="74" cy="24" r="7" stroke="#FF6B4A"/><path d="M74 31v12M74 36l-10 4M74 36l11 5M74 43l-7 19M74 43l10 19" stroke="#FF6B4A"/>
+        <path d="M96 14l6-6" stroke="#FFC93C"/>
+      </svg>
+      <span class="tag">Envy</span>
+      <h3>3. The Game Explainer</h3>
+      <p class="hook">"We hid five badges along Marina. Nobody knew where."</p>
+      <p class="shots"><b>0–2s</b> the rule stated as a challenge, on screen. <b>2–6s</b> show the setup — chalk mark, hidden chit. <b>6–20s</b> chaos footage: people sprinting, arguing, finding. <b>20–28s</b> the winner, hands up. <b>End</b> "Next game drops Saturday."</p>
+      <span class="why">Why it works: this is your differentiator made visible. Nobody scrolls past a game with clear rules and a winner — it's a story with an ending, and endings get watched to completion.</span>
+    </div>
+
+    <div class="reel">
+      <svg width="110" height="80" viewBox="0 0 110 80" fill="none" stroke="#12183B" stroke-width="3" stroke-linecap="round">
+        <path d="M55 10v56" stroke="#0E7C7B" stroke-dasharray="6 7"/>
+        <circle cx="30" cy="30" r="8"/><path d="M30 38v16M22 66l8-12M38 66l-8-12"/>
+        <path d="M70 24h22M70 34h22M70 44h14" stroke="#FF6B4A"/>
+        <path d="M96 62l6 6" stroke="#FFC93C"/>
+      </svg>
+      <span class="tag sea">Entry</span>
+      <h3>4. Split-Screen Expectation vs Reality</h3>
+      <p class="hook">"What you think a run club is 👉 what it actually is."</p>
+      <p class="shots"><b>Left half:</b> stock-serious runner, stopwatch, grim face. <b>Right half:</b> your people doing tug of war, falling over, drinking chai. Alternate which half fills the screen every 2 seconds. <b>End text:</b> "We're the second one."</p>
+      <span class="why">Why it works: pattern interrupt plus instant category clarity. In eight seconds a stranger knows exactly which kind of club you are.</span>
+    </div>
+
+    <div class="reel">
+      <svg width="110" height="80" viewBox="0 0 110 80" fill="none" stroke="#12183B" stroke-width="3" stroke-linecap="round">
+        <rect x="26" y="14" width="58" height="52" rx="6" stroke="#FF6B4A"/>
+        <circle cx="55" cy="36" r="12"/><path d="M50 36l4 4 8-9"/>
+        <path d="M40 58h30" stroke="#0E7C7B"/>
+        <path d="M16 22l-6-6M94 22l6-6" stroke="#FFC93C"/>
+      </svg>
+      <span class="tag coral">Identity</span>
+      <h3>5. The Nickname Reveal</h3>
+      <p class="hook">"Week 4. She earned her name today."</p>
+      <p class="shots"><b>0–3s</b> the person, unaware, mid-run. <b>3–12s</b> the circle chanting the nickname, the reaction. <b>12–20s</b> a member says one line about why. <b>End:</b> "Four Saturdays and you get one too."</p>
+      <span class="why">Why it works: this is the reel your members send to <em>their</em> friends, because they're in it. Twenty members each sending to five people beats any ad you could buy.</span>
+    </div>
+
+    <div class="reel">
+      <svg width="110" height="80" viewBox="0 0 110 80" fill="none" stroke="#12183B" stroke-width="3" stroke-linecap="round">
+        <circle cx="55" cy="40" r="24" stroke="#0E7C7B"/>
+        <path d="M55 22v18l12 8"/>
+        <path d="M20 12l8 8M90 12l-8 8" stroke="#FFC93C"/>
+        <path d="M30 70l6-8M80 70l-6-8" stroke="#FF6B4A"/>
+      </svg>
+      <span class="tag">Envy</span>
+      <h3>6. The Photo Finish</h3>
+      <p class="hook">"Slowest runner started first. Watch what happens."</p>
+      <p class="shots"><b>0–3s</b> state the handicap rule with a text card. <b>3–8s</b> the staggered starts. <b>8–18s</b> the chase, shot low from the finish line. <b>18–25s</b> everyone arriving in a pile within seconds of each other, screaming.</p>
+      <span class="why">Why it works: built-in suspense. The viewer must watch to the end to see if it worked — and completion rate is the second thing the algorithm checks after the 3-second gate.</span>
+    </div>
+
+    <div class="reel">
+      <svg width="110" height="80" viewBox="0 0 110 80" fill="none" stroke="#12183B" stroke-width="3" stroke-linecap="round">
+        <path d="M30 66V26l25-16 25 16v40z" stroke="#FF6B4A"/>
+        <path d="M44 66V48h22v18"/>
+        <path d="M14 40l-6-4M96 40l6-4" stroke="#FFC93C"/>
+        <path d="M20 70h70" stroke="#0E7C7B"/>
+      </svg>
+      <span class="tag coral">Identity</span>
+      <h3>7. Kolam Time-lapse</h3>
+      <p class="hook">"Every Saturday we draw our finish line."</p>
+      <p class="shots">Phone propped on a bag, 30-second time-lapse of the kolam being drawn on the promenade as the sun comes up, then the first runners crossing it. No talking. Ambient sea audio only.</p>
+      <span class="why">Why it works: unmistakably Chennai, quietly beautiful, and it gets saved — which is the third-strongest signal. It's also the reel that makes a non-runner want in.</span>
+    </div>
+
+    <div class="reel">
+      <svg width="110" height="80" viewBox="0 0 110 80" fill="none" stroke="#12183B" stroke-width="3" stroke-linecap="round">
+        <path d="M34 26h42v30a12 12 0 01-12 12H46a12 12 0 01-12-12z" stroke="#0E7C7B"/>
+        <path d="M76 34h8a7 7 0 010 14h-8" stroke="#0E7C7B"/>
+        <path d="M44 16c0 5-5 5-5 10M56 12c0 5-5 5-5 10M68 16c0 5-5 5-5 10" stroke="#FF6B4A"/>
+      </svg>
+      <span class="tag sea">Entry</span>
+      <h3>8. Chai Table Talk</h3>
+      <p class="hook">"Ask the group: why'd you actually come?"</p>
+      <p class="shots">Handheld, one question, five answers back to back, 3–4 seconds each. Real answers only — "my flatmate dragged me", "I moved to Chennai and knew nobody", "I hate running, I come for the throwball." Cut fast. Captions burned in.</p>
+      <span class="why">Why it works: the honest answer beats the aspirational one. Someone new in the city hears their own reason spoken aloud and immediately sends it to themselves in a saved folder.</span>
+    </div>
+
+    <div class="reel">
+      <svg width="110" height="80" viewBox="0 0 110 80" fill="none" stroke="#12183B" stroke-width="3" stroke-linecap="round">
+        <rect x="24" y="18" width="62" height="44" rx="5"/>
+        <path d="M24 33h62M45 18v44M65 18v44"/>
+        <path d="M29 26l4 4 7-9M50 41l4 4 7-9M70 56l4 4 7-9" stroke="#FF6B4A"/>
+      </svg>
+      <span class="tag coral">Ask</span>
+      <h3>9. The Saturday Card</h3>
+      <p class="hook">"This Saturday: Mystery Envelope. Nobody knows the route."</p>
+      <p class="shots">Under 10 seconds. One shot of last week's chaos + a bold text card: game name, 6:00 AM, exact meeting point ("lighthouse steps"). Post Thursday evening, repost to Story Friday night and Saturday 5:30 AM.</p>
+      <span class="why">Why it works: this is your only pure Ask post. It converts because the other nine formats already did the selling. Never make it your main content — 10% of posts, maximum.</span>
+    </div>
+
+    <div class="reel">
+      <svg width="110" height="80" viewBox="0 0 110 80" fill="none" stroke="#12183B" stroke-width="3" stroke-linecap="round">
+        <circle cx="38" cy="26" r="9"/><path d="M38 35v18M38 41l-12 6M38 41l13 7M38 53l-9 16M38 53l11 16"/>
+        <path d="M66 20l22 12-22 12z" stroke="#FF6B4A"/>
+        <path d="M70 62h26" stroke="#FFC93C"/>
+      </svg>
+      <span class="tag sea">Entry</span>
+      <h3>10. First-Timer POV</h3>
+      <p class="hook">"Day 1 vs Day 30 at the run club."</p>
+      <p class="shots">Hand a phone to an actual newcomer on their first Saturday. Ten seconds of them at 6 AM looking terrified. Then a month later, same angle, same spot, now surrounded by people. Cut them together.</p>
+      <span class="why">Why it works: transformation with a real face, not a promise. Start filming these <em>now</em>, even before you need them — you can't fake a Day 1 retroactively.</span>
+    </div>
+
+    <div class="reel">
+      <svg width="110" height="80" viewBox="0 0 110 80" fill="none" stroke="#12183B" stroke-width="3" stroke-linecap="round">
+        <path d="M14 44h82" stroke="#FF6B4A"/><path d="M55 32v24" stroke="#FFC93C"/>
+        <circle cx="28" cy="32" r="6"/><path d="M28 38v10M22 48l-6 14M34 48l6 14"/>
+        <circle cx="84" cy="32" r="6"/><path d="M84 38v10M78 48l-6 14M90 48l6 14"/>
+      </svg>
+      <span class="tag">Envy</span>
+      <h3>11. Club vs Club</h3>
+      <p class="hook">"We challenged another Chennai crew. Loser buys chai."</p>
+      <p class="shots"><b>0–3s</b> the challenge stated to camera. <b>3–15s</b> the tug of war, low angle, sand flying. <b>15–22s</b> the collapse and the losing side paying up. Tag the other club — you appear in <em>their</em> whole audience's feed.</p>
+      <span class="why">Why it works: collab posts reach both follower bases, and rivalry is the most watchable format in sport at any scale.</span>
+    </div>
+
+    <div class="reel">
+      <svg width="110" height="80" viewBox="0 0 110 80" fill="none" stroke="#12183B" stroke-width="3" stroke-linecap="round">
+        <path d="M20 60h70" stroke="#0E7C7B"/>
+        <path d="M26 60V38h14v22M48 60V24h14v36M70 60V44h14v16" stroke="#FF6B4A"/>
+        <path d="M20 18l6 6M92 18l-6 6" stroke="#FFC93C"/>
+      </svg>
+      <span class="tag coral">Identity</span>
+      <h3>12. The Weekly Number</h3>
+      <p class="hook">"Week 1: 6 people. Week 12: 47."</p>
+      <p class="shots">Fast montage of every week's group photo in order, one per beat, ending on the biggest one. Count on screen the whole time. Post monthly, and again at every milestone.</p>
+      <span class="why">Why it works: momentum is contagious and visible growth is a reason to join <em>now</em> rather than later. This is also the single post most likely to attract a local brand or shop partnership.</span>
+    </div>
+  </div>
+</section>
+
+<!-- =============== 3 =============== -->
+<section class="panel" id="r3" role="tabpanel">
+  <h2>The 30-day posting rhythm</h2>
+  <p class="note">Four reels a week is a fantasy for a volunteer club. Three is sustainable and enough. Here's the week, repeated four times.</p>
+
+  <div class="card">
+    <table>
+      <tr><th>Day</th><th>Post</th><th>Format</th><th>Job</th></tr>
+      <tr><td>Sun</td><td>Reel</td><td>Yesterday's best moment — the game, the finish, the chaos (#3 / #6 / #11)</td><td>Envy. Post by 6 PM while it's still yesterday.</td></tr>
+      <tr><td>Mon</td><td>Story only</td><td>Poll: "which game next Saturday?" 3 options</td><td>Members choose = members show up</td></tr>
+      <tr><td>Tue</td><td>Reel</td><td>Entry or Identity — #2, #8, #5, #10</td><td>Convert the lurkers who watched Sunday</td></tr>
+      <tr><td>Wed</td><td>Carousel</td><td>Member spotlight, 4 slides: photo, name, why they joined, their nickname</td><td>That member shares it to their whole network</td></tr>
+      <tr><td>Thu</td><td>Reel</td><td><b>The Saturday Card (#9)</b> — game, time, exact spot</td><td>The only Ask of the week</td></tr>
+      <tr><td>Fri</td><td>Story only</td><td>Countdown sticker + "reply 🏃 if you're coming"</td><td>Replies open a DM thread with every attendee</td></tr>
+      <tr><td>Sat</td><td>Stories live</td><td>5:45 setup → 6:00 gather → the game → the circle → chai. 6–8 frames across the morning</td><td>FOMO in real time, and it's zero extra work</td></tr>
+    </table>
+    <p style="margin-top:14px"><b>Monthly extras:</b> one Kolam time-lapse (#7), one Weekly Number (#12) on the last Sunday, one collab reel (#11) whenever you meet another club.</p>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>Who does this? Not you.</h3>
+      <p>The founder cannot be the editor forever — this is where run clubs die. Assign three roles by week two:</p>
+      <ul>
+        <li><b>Shooter</b> — one person films 20 clips every Saturday. Rotate weekly so the style stays varied and everybody gets to be in front of the camera sometimes.</li>
+        <li><b>Editor</b> — one person cuts three reels from that footage during the week. Total time: about 90 minutes.</li>
+        <li><b>Poster</b> — one person owns the calendar, captions, and replying to comments.</li>
+      </ul>
+      <p>Three people, ninety minutes each. That's the whole operation.</p>
+    </div>
+    <div class="card">
+      <h3>The one-morning content bank</h3>
+      <p>Every Saturday morning should produce enough footage for the entire following week. Shot list to hand your shooter:</p>
+      <ul>
+        <li>Sunrise over the water — 10 seconds, steady</li>
+        <li>Feet on sand, low and close — 5 clips</li>
+        <li>The group running away from camera — wide</li>
+        <li>The group running <em>at</em> camera — the money shot</li>
+        <li>Three faces laughing, close up</li>
+        <li>The game: setup, chaos, winner — 3 clips minimum</li>
+        <li>The circle from the outside, slow pan</li>
+        <li>Chai cups clinking</li>
+        <li>One person saying one sentence to camera</li>
+      </ul>
+      <p>Twenty clips. Fifteen minutes of a shooter's attention. A week of content.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =============== 4 =============== -->
+<section class="panel" id="r4" role="tabpanel">
+  <h2>Shoot & edit, phone only</h2>
+  <p class="note">You have zero budget and the best natural light in the city for exactly forty minutes a week. Use it.</p>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>Shooting rules</h3>
+      <ul>
+        <li><b>Vertical, always.</b> 9:16, 1080×1920. Never crop a horizontal video later — you lose the top and bottom where your text goes.</li>
+        <li><b>Shoot into the sun, not with it.</b> Silhouettes of runners against a Bay of Bengal sunrise are the single most valuable frame you own. Sunrise is roughly 5:50–6:15 in Chennai, so the golden window <em>is</em> your gather time.</li>
+        <li><b>Get low.</b> Phone at ankle height on the sand, runners coming toward you. This one trick makes an amateur clip look shot.</li>
+        <li><b>Film more than you need.</b> 20 clips for 3 reels. Every clip 6–10 seconds; you'll use 2 of those seconds.</li>
+        <li><b>Lock exposure</b> by tapping and holding, or the sun will strobe your whole clip.</li>
+        <li><b>Sound matters more than you think.</b> Wind ruins audio — for anyone speaking to camera, stand with your back to the sea and hold the phone close.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Editing rules</h3>
+      <ul>
+        <li><b>Edit inside Instagram</b> where possible. Exporting from other apps risks watermarks, and watermarked or recycled-looking content is actively demoted.</li>
+        <li><b>Cut every 2–3 seconds.</b> A held shot longer than 3 seconds must be earning it.</li>
+        <li><b>Captions always on.</b> Assume the sound is off. Burn in big text, high contrast, positioned in the middle third — the top and bottom get covered by the interface.</li>
+        <li><b>Hook text at 0:00.</b> Not after a logo. You do not have a logo animation budget and you should be grateful.</li>
+        <li><b>Loop it.</b> End on a frame close to your opening frame. The replay is free watch time.</li>
+        <li><b>Audio:</b> use Instagram's own library, or keep the raw sea and shouting. Real ambient audio from a real place often outperforms a trending song, and it can't get you flagged.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Text overlay style — keep it identical every week</h3>
+    <p>Consistency is free branding. Pick these once and never change them:</p>
+    <table>
+      <tr><th>Element</th><th>Spec</th></tr>
+      <tr><td>Hook text</td><td>All caps, heaviest weight available, white with a hard black shadow, positioned at 25% from the top</td></tr>
+      <tr><td>Accent colour</td><td>One word per hook highlighted in <span style="background:#FFC93C;padding:2px 6px;border-radius:4px">#FFC93C</span> — the same yellow every single time</td></tr>
+      <tr><td>End card</td><td>Same 3 lines forever: <b>YOLO RUN CLUB · SATURDAYS 6 AM · CHENNAI</b></td></tr>
+      <tr><td>Safe zone</td><td>Keep all text between 15% and 75% of frame height, or the UI covers it</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- =============== 5 =============== -->
+<section class="panel" id="r5" role="tabpanel">
+  <h2>Captions, hooks & the DM machine</h2>
+  <p class="note">Hashtag walls are yesterday's tactic. Instagram now reads captions as search text — so write for a human who might come, and a machine that decides who sees it.</p>
+
+  <div class="card">
+    <h3>The caption formula</h3>
+    <div class="script">Line 1 — the hook, repeated in words (this is what gets indexed)
+Line 2 — one human sentence about what actually happened
+Line 3 — the practical detail: day, time, exact meeting point
+Line 4 — the CTA: comment a keyword, not "link in bio"
+Line 5 — 4–6 tight local tags. Not thirty.</div>
+    <p style="margin-top:14px"><b>Worked example:</b></p>
+    <div class="script">We hid five badges along Marina Beach and nobody knew where.
+
+Forty people, two hours, one very confused fisherman. Priya found all five in 34 minutes and has been insufferable since.
+
+Every Saturday, 6 AM, lighthouse steps. Slowest pace welcome — nobody gets left behind.
+
+Comment RUN and we'll send you the group link 🏃
+
+#chennairunclub #marinabeach #runchennai #besantnagar #chennaifitness</div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>Hooks that work on this audience</h3>
+      <p>Six formulas, with a Chennai version of each. Test three at a time; keep what gets sends.</p>
+      <ul>
+        <li><b>Curiosity gap</b> — "We hid five badges along Marina. Nobody found all of them."</li>
+        <li><b>Negative / warning</b> — "Don't join a run club before you know this one thing." <em>(negative hooks consistently beat positive ones for cold reach)</em></li>
+        <li><b>Local pride</b> — "Chennai at 6 AM hits different. Proof:"</li>
+        <li><b>Objection killer</b> — "You don't need to be fit. You need to show up."</li>
+        <li><b>Tamil hybrid</b> — "6 AM-க்கு எழுந்திருக்க முடியலையா? இதோ ஒரு reason." Tamil hook, English keywords — cheaper reach and higher trust locally.</li>
+        <li><b>Direct challenge</b> — "Tag the friend who says they'll come and never does."</li>
+      </ul>
+      <p><b>Never open with:</b> "Welcome to YOLO Run Club", your logo, or the word "we". Open with "you", a number, or a picture of the sun.</p>
+    </div>
+    <div class="card">
+      <h3>The comment → DM → Saturday machine</h3>
+      <p>This is the whole conversion path, and it costs nothing.</p>
+      <ul>
+        <li><b>1.</b> End every Ask reel with <b>"Comment RUN"</b>. Use one keyword forever so you can count it.</li>
+        <li><b>2.</b> Comments push distribution — so the CTA is also a reach tactic, not just a conversion one.</li>
+        <li><b>3.</b> Reply to every comment <b>within the hour</b> while the reel is still being ranked. Reply with a real sentence, not an emoji — conversation depth counts for more than raw comment count.</li>
+        <li><b>4.</b> DM each commenter the WhatsApp link <em>and one personal line</em>: "Are you coming this Saturday? I'll look out for you at the steps."</li>
+        <li><b>5.</b> Saturday morning, <b>find them by name.</b> This is the step everyone skips and it's the one that turns a comment into a member.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Profile setup — fix this before you post anything else</h3>
+    <table>
+      <tr><th>Field</th><th>What it should say</th></tr>
+      <tr><td>Name field</td><td><b>YOLO Run Club · Chennai</b> — the name field is searchable, so the words "run club Chennai" must be in it</td></tr>
+      <tr><td>Bio line 1</td><td>Saturdays, 6 AM, Chennai beaches 🌅</td></tr>
+      <tr><td>Bio line 2</td><td>Running + games. Slowest pace welcome.</td></tr>
+      <tr><td>Bio line 3</td><td>👇 This Saturday's meeting point</td></tr>
+      <tr><td>Link</td><td>The WhatsApp group invite, direct. Not a Linktree — every extra tap loses people.</td></tr>
+      <tr><td>Highlights</td><td>Four only: <b>START HERE</b> · <b>GAMES</b> · <b>THE CREW</b> · <b>THIS WEEK</b></td></tr>
+      <tr><td>Pinned posts</td><td>Pin three: your best Envy reel, the "what actually happens" Entry reel, and the current Saturday card</td></tr>
+    </table>
+    <p style="margin-top:12px">A stranger who finds a reel takes about four seconds on your profile to decide. Those four seconds need to answer: what is this, when is it, and can I do it?</p>
+  </div>
+
+  <div class="card" style="background:var(--ink);border-color:var(--ink);text-align:center">
+    <p style="font-family:'Caveat',cursive;font-size:clamp(24px,4.5vw,38px);color:var(--marigold);line-height:1.3;margin:6px 0">
+      Don't make reels about running.<br>Make reels people send to a friend<br>with the words "let's go."
+    </p>
+  </div>
+</section>
+
+<footer>YOLO Run Club · Reel Engine · shoot Saturday, post all week</footer>
+</div>
+
+<script>
+const tabs=[...document.querySelectorAll('.tab')];
+tabs.forEach(t=>t.addEventListener('click',()=>{
+  tabs.forEach(x=>x.setAttribute('aria-selected','false'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  t.setAttribute('aria-selected','true');
+  document.getElementById(t.dataset.p).classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+}));
+</script>
+</body>
+</html>
